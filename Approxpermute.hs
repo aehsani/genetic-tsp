@@ -4,9 +4,9 @@ module Approxpermute
 
 import System.Random
 
-permutations num 0   seed = error "No points to permute"
+permutations :: Int -> Int -> Int -> [[Int]]
 permutations num len seed
-    | num <= 0 = []
+    | num <= 0  = []
 permutations num len seed = x:permutations (num-1) len seed
     where x = shuffleD list (mkStdGen (num+seed))
           list = [1..len]
