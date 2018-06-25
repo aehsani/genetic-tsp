@@ -13,11 +13,16 @@ type Pointmap = Map Int (Int, Int)
 gensize = 20
 nChildren = 50
 
-finalPath :: [(Int, Int)] -> Int -> Int -> [Int]
-finalPath []     nGens seed = []
-finalPath ptList nGens seed = head $ evolve ptMap nGens firstGen seed
+finalPath :: [(Int, Int)] -> Int -> Int -> Maybe [(Int, Int)]
+finalPath []     nGens seed = Just [] -- maybe this should be nothing - pay more attention when refactoring
+finalPath ptList nGens seed = remap ptMap finalOrder
     where ptMap = makePtMap ptList
           firstGen   = permutations gensize (length ptList) seed
+          finalOrder = head $ evolve ptMap nGens firstGen seed
+
+remap :: Pointmap -> [Int] -> Maybe [(Int, Int)]
+remap ptMap order = sequence maybeList
+    where maybeList = fmap (\x -> Map.lookup x ptMap) order
 
 evolve :: Pointmap -> Int -> [[Int]] -> Int -> [[Int]]
 evolve ptMap 0 currentGen seed = currentGen
