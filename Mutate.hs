@@ -3,36 +3,65 @@ module Mutate
 ) where
 
 import System.Random
+import Approxpermute
 
 type Ordrep = [Int]
 type Canonic = [Int]
 type Tour = [Int]
 
+reproduce :: [Tour] -> Int -> Int -> Int -> [Tour]
+reproduce []   nCross nMut seed = []
+reproduce curr nCross nMut seed = (curr ++ children)
+    where children = crossed ++ mutated
+          crossed = crossGen curr nCross stdGen
+          mutated = mutateGen curr nMut stdGen'
+          (stdGen,stdGen') = (mkStdGen seed, mkStdGen (seed+97))
 
-reproduce []      numNew seed = []
-reproduce currGen numNew seed = currGen ++ children
-    where children = crossGen currGen numNew stdGen
-          stdGen = mkStdGen seed
+mutateGen :: [Tour] -> Int -> StdGen -> [Tour]
+mutateGen curr 0    stdGen = []
+mutateGen curr nMut stdGen = x:mutateGen curr (nMut-1) stdGen''
+    where (x, stdGen'') = mutSwap p stdGen' 
+          (p, stdGen')  = selectOne curr stdGen
 
-crossGen []      numNew stdGen = []
-crossGen currGen numNew stdGen
-        | numNew <= 0          = []
-crossGen currGen numNew stdGen = x:crossGen currGen (numNew-1) stdGen''
-    where (x, stdGen'')   = crossTwo p q stdGen'
-          (p, q, stdGen') = selectTwo currGen stdGen
+selectOne :: [Tour] -> StdGen -> (Tour, StdGen)
+selectOne gen stdGen = (p, stdGen')
+    where p = gen !! pos
+          (pos, stdGen') = randomR (0,bound) stdGen
+          bound = length gen - 1
 
-selectTwo []  stdGen = error "No species to choose from"
+mutSwap :: Tour -> StdGen -> (Tour, StdGen)
+mutSwap path stdGen = (newPath, stdGen'')
+    where newPath = swapPos i j path
+          (i, stdGen')  = randomR (0,bound) stdGen
+          (j, stdGen'') = randomR (0,bound) stdGen'
+          bound = length path - 1
+
+swapPos :: Int -> Int -> Tour -> Tour
+swapPos i j ls = [get k x | (k, x) <- zip [0..length ls - 1] ls]
+    where get k x | k == i = ls !! j
+                  | k == j = ls !! i
+                  | otherwise = x
+
+crossGen :: [Tour] -> Int -> StdGen -> [Tour]
+crossGen curr 0      stdGen = []
+crossGen curr nCross stdGen = x:crossGen curr (nCross-1) stdGen''
+    where (x, stdGen'')   = crossTour p q stdGen'
+          (p, q, stdGen') = selectTwo curr stdGen
+
+selectTwo :: [Tour] -> StdGen -> (Tour, Tour, StdGen)
 selectTwo gen stdGen = (p, q, stdGen')
     where p = gen !! pos
           q = gen !! fst (randomR (0,bound) stdGen')
           (pos, stdGen') = randomR (0,bound) stdGen
           bound = length gen - 1
 
-crossTwo p q stdGen = (getBackTour newOrdrep, stdGen')
+crossTour :: Tour -> Tour -> StdGen -> (Tour, StdGen)
+crossTour p q stdGen = (getBackTour newOrdrep, stdGen')
     where (newOrdrep, stdGen') = switchOrd pOrd qOrd stdGen
           pOrd = getOrdrep p
           qOrd = getOrdrep q
 
+switchOrd :: Ordrep -> Ordrep -> StdGen -> (Ordrep, StdGen)
 switchOrd p  q  stdGen = (leftp ++ rightq, stdGen')
     where leftp        = take n p
           rightq       = drop n q
