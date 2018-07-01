@@ -11,9 +11,9 @@ import Approxpermute
 
 
 type Tour = [Int]
-type Point = (Int, Int)
-type Pointmap = Map Int Point
-type Pointlist = [Point]
+type Intpoint = (Int, Int)
+type Pointmap = Map Int Intpoint
+type Pointlist = [Intpoint]
 
 gensize = 10
 nCross = 15
@@ -65,7 +65,7 @@ getDstStrt ptMap (x:y:ys) n = ptDist ptMap x y + getDstStrt ptMap (y:ys) n
 ptDist :: (Floating a) => Pointmap -> Int -> Int -> a
 ptDist ptMap x y = maybeCalc (Map.lookup x ptMap) (Map.lookup y ptMap)
 
-maybeCalc :: (Floating a) => Maybe Point -> Maybe Point -> a
+maybeCalc :: (Floating a) => Maybe Intpoint -> Maybe Intpoint -> a
 maybeCalc _ Nothing = error "Number does not exist in map"
 maybeCalc Nothing _ = error "Number does not exist in map"
 maybeCalc (Just (x1, y1))  (Just (x2, y2)) = sqrt . fromIntegral $ intInput
