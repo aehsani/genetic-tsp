@@ -1,8 +1,8 @@
 import Genetic
 import Graphics.Gloss
 
-generations = 10000
-seed = 20
+generations = 1000
+seed = 87
 
 main = do
     pointList <- fmap extractPoints $ readFile "data.txt"
