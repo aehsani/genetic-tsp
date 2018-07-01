@@ -15,9 +15,9 @@ type Intpoint = (Int, Int)
 type Pointmap = Map Int Intpoint
 type Pointlist = [Intpoint]
 
-gensize = 10
-nCross = 15
-nMutate = 15
+gensize = 20
+nCross = 20
+nMutate = 30
 
 getAllPaths ptList nGens seed = allPaths ptMap nGens firstGen seed
     where ptMap = makePtMap ptList

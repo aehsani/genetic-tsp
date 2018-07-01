@@ -1,7 +1,7 @@
 import Genetic
 import Graphics.Gloss
 
-generations = 300
+generations = 10000
 seed = 20
 
 main = do
@@ -21,8 +21,11 @@ extractPoints :: String -> [(Int, Int)]
 extractPoints pointStr = map read broken
     where broken = lines pointStr
 
-ySize = 1500
 
+
+
+
+ySize = 1500
 xSize = 2400
 
 window :: Display
