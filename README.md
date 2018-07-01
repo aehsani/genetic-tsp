@@ -11,6 +11,20 @@ Compile the project with `ghc --make tsp.hs`
 
 To run the code, execute `./tsp`
 
+Variables in `tsp.hs` govern the number of generations
+
+```haskell
+generations = 1000
+```
+
+Variables in `Genetic.hs` govern the size of generations and how they evolve
+
+```haskell
+gensize = 20
+nCross = 20
+nMutate = 30
+```
+
 ## Results
 
 Example #1
